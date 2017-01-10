@@ -1,0 +1,380 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package userInterface.PollutionBoardSupervisor;
+
+import business.EcoDistrict;
+import business.Enterprise.Enterprise;
+import business.Neighborhood.Neighborhood;
+import business.Organization.Organization;
+import business.Organization.PollutionBoardOrg;
+import business.Person.Person;
+import business.PollutionSensors.PollutionSensor;
+import business.UserAccount.UserAccount;
+import business.WorkQueue.PollutionWorkRequest;
+import business.WorkQueue.WorkRequest;
+import java.awt.Color;
+import java.awt.Component;
+import java.util.Date;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+
+/**
+ *
+ * @author Reshmi
+ */
+public class PollutionBoardSupervisorWorkArea extends javax.swing.JPanel {
+
+    /**
+     * Creates new form PollutionBoardSupervisorWorkArea
+     */
+    private JPanel userProcessContainer;
+//    private Neighborhood neighborhood;
+    private EcoDistrict ecoDistrict;
+    private UserAccount account;
+    private UserAccount userAccount;
+    private Enterprise enterprise;
+    public PollutionBoardSupervisorWorkArea(JPanel userProcessContainer,EcoDistrict ecoDistrict,UserAccount userAccount,Enterprise enterprise) {
+        initComponents();
+        this.userProcessContainer = userProcessContainer;
+        this.ecoDistrict = ecoDistrict;
+        this.userAccount = userAccount;
+        this.enterprise = enterprise;
+        //this.neighborhood = neighborhood;
+        populateTable();
+        populateAlertTable();
+    }
+
+    public void populateTable()
+    {
+        DefaultTableModel model = (DefaultTableModel)gasesTable.getModel();
+        TableColumnModel tcm = gasesTable.getColumnModel();
+        CustomTableCellRenderer customTableCellRenderer = new CustomTableCellRenderer();
+        model.setRowCount(0);
+        
+        if(ecoDistrict.getNeighborhoodList()!=null){
+            for(Neighborhood neighborhood : ecoDistrict.getNeighborhoodList()){
+                if(neighborhood.getPollutionSensorList()!=null){
+                for(PollutionSensor sensor : neighborhood.getPollutionSensorList().getPollutionSensorList()){
+                    Object[] row = new Object[6];
+                    row[0] = neighborhood;
+                    row[1] = impact(sensor);
+                    row[2] = sensor.getCo2SensorReading();
+                    row[3] = sensor.getCo2SensorReading();
+                    row[4] = sensor.getN2oSensorReading();
+                    row[5] = sensor.getTimeStamp();
+                    model.addRow(row);
+                    tcm.getColumn(1).setCellRenderer(customTableCellRenderer);
+                }
+                }
+            }
+        }
+    }
+    
+     public class CustomTableCellRenderer extends DefaultTableCellRenderer{
+      public Component getTableCellRendererComponent (JTable table, Object obj, boolean isSelected, boolean hasFocus, int row, int column) {
+        Component cell = super.getTableCellRendererComponent(table, obj, isSelected, hasFocus, row, column);
+
+     TableModel model = gasesTable.getModel();
+        String impact = (String)model.getValueAt(row, 1);
+        if(impact.equals("SEVERELY POLLUTED"))
+        {
+            cell.setBackground(Color.red);
+        }
+        else if(impact.equals("MODERATELY POLLUTED")){
+            cell.setBackground(Color.orange);
+        }
+        else if(impact.equals("LIGHTLY POLLUTED")){
+            cell.setBackground(Color.pink);
+        }
+        else if(impact.equals("GOOD")){
+            cell.setBackground(Color.yellow);
+        }
+        else if(impact.equals("EXCELLENT")){
+            cell.setBackground(Color.green);
+        }
+        return cell;
+      }
+    }
+     
+    public String impact(PollutionSensor sensor)
+    {
+        String impact=null;
+        int co2 = sensor.getCo2SensorReading();
+        int ch4 = sensor.getCh4SensorReading();
+        int n2o = sensor.getN2oSensorReading();
+        if(co2>=1000||ch4>=1000||n2o>=1000){
+            impact = "SEVERELY POLLUTED";
+        }
+        else if((co2>=800&&co2<1000)||(ch4>=800&&ch4<1000)||(n2o>=800&&n2o<1000)){
+            impact = "MODERATELY POLLUTED";
+        }
+        else if((co2>=700&&co2<800)||(ch4>=700&&ch4<800)||(n2o>=700&&n2o<800)){
+            impact = "LIGHTLY POLLUTED";
+        }
+        else if((co2>=300&&co2<700)||(ch4>=300&&ch4<700)||(n2o>=300&&n2o<700)){
+            impact = "GOOD";
+        }
+        else{
+            impact = "EXCELLENT";
+        }
+        return impact;
+    }
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jScrollPane1 = new javax.swing.JScrollPane();
+        gasesTable = new javax.swing.JTable();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        alertDetailsTable = new javax.swing.JTable();
+        jLabel2 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        alaertBtn = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        notificationTxt = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+
+        setBackground(new java.awt.Color(255, 255, 255));
+
+        gasesTable.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        gasesTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "Area", "Pollution Level", "CO2", "CH4", "N2O", "Recorded On"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        gasesTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(gasesTable);
+
+        alertDetailsTable.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        alertDetailsTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "Area Name", "Area Admin", "Sender", "Sent On", "Message", "Status", "Response"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane2.setViewportView(alertDetailsTable);
+
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Alert", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 0, 11), new java.awt.Color(102, 0, 102))); // NOI18N
+
+        alaertBtn.setBackground(new java.awt.Color(0, 153, 0));
+        alaertBtn.setFont(new java.awt.Font("Verdana", 3, 12)); // NOI18N
+        alaertBtn.setForeground(new java.awt.Color(255, 255, 255));
+        alaertBtn.setText("Alert");
+        alaertBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                alaertBtnActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        jLabel1.setText("Notification Message");
+
+        notificationTxt.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(notificationTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(119, 119, 119)
+                        .addComponent(alaertBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(notificationTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addGap(14, 14, 14)
+                .addComponent(alaertBtn)
+                .addContainerGap())
+        );
+
+        jLabel3.setFont(new java.awt.Font("Verdana", 3, 11)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(102, 0, 102));
+        jLabel3.setText("Alert Details");
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(89, 89, 89)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(15, 15, 15)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
+                                .addComponent(jLabel2)
+                                .addComponent(jScrollPane1)))))
+                .addGap(15, 15, 15))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(14, 14, 14)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void alaertBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_alaertBtnActionPerformed
+        int selectedRow = gasesTable.getSelectedRow();
+        Date requestDate = new Date();
+        
+        if(selectedRow>=0)
+        {
+            String level = (String)gasesTable.getValueAt(selectedRow, 1);
+            try{
+            if(level.equals("GOOD")||level.equals("EXCELLENT")){
+                JOptionPane.showMessageDialog(null, "Area is not polluted.Alert cannot be triggered", "MESSAGE", JOptionPane.INFORMATION_MESSAGE);
+            }
+            else{
+                if(!notificationTxt.getText().trim().isEmpty()){
+            DefaultTableModel model = (DefaultTableModel)gasesTable.getModel();
+            Neighborhood neighborhood = (Neighborhood)model.getValueAt(selectedRow, 0);
+            //PollutionSensor sensor = (PollutionSensor)model.getValueAt(selectedRow, 0);
+            for(Neighborhood areas: ecoDistrict.getNeighborhoodList()){
+            for(UserAccount ua: areas.getUserAccDir().getUserAccountList()){
+            for(Person person : neighborhood.getPersonDir().getPersonDir()){
+                if(person.getPersonName().equals(ua.getPerson().getPersonName())){
+                    account = ua; 
+                    System.out.println(ua.getPerson().getPersonName());
+                }
+            }
+            }
+            }
+            PollutionWorkRequest request = new PollutionWorkRequest();
+            String message = neighborhood.getNeighborhoodName();
+            String comment = notificationTxt.getText();
+            request.setMessage(message);
+            request.setSender(userAccount);
+            request.setReceiver(account);
+            request.setRequestDate(requestDate);
+            request.setStatus("sent to area admin");
+            request.setComment(comment);
+            Organization org = null;
+            for(Organization organization : enterprise.getOrganizationList().getOrganizationList())
+            {
+                if(organization instanceof PollutionBoardOrg){
+                    org = organization;
+                    break;
+                }
+            }
+            if(org!=null)
+            {
+                userAccount.getWorkQueue().getWorkRequestList().add(request);
+                account.getWorkQueue().getWorkRequestList().add(request);
+            }
+            populateAlertTable();
+            JOptionPane.showMessageDialog(null, "Alert Sent", "Infomation", JOptionPane.INFORMATION_MESSAGE);
+        }else{
+            JOptionPane.showMessageDialog(null, "Enter a message to notify", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        }}catch(Exception e){
+            JOptionPane.showMessageDialog(null, "Cannot send alert", "WARNING", JOptionPane.WARNING_MESSAGE);
+        }
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null, "Please Select a Row", "WARNING", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_alaertBtnActionPerformed
+
+    public void populateAlertTable()
+    {
+        DefaultTableModel dtm = (DefaultTableModel)alertDetailsTable.getModel();
+        dtm.setRowCount(0);
+        
+        for (WorkRequest request : userAccount.getWorkQueue().getWorkRequestList())
+        {
+            if(userAccount.getWorkQueue().getWorkRequestList()!=null)
+            {
+            Object[] row = new Object[7];
+            
+            row[0] = request.getMessage();
+            row[1] = request.getReceiver();
+            row[2] = request.getSender();
+            row[3] = request.getRequestDate();
+            row[4] = ((PollutionWorkRequest)request).getComment();
+            row[5] = request.getStatus();
+            row[6] = ((PollutionWorkRequest)request).getResponse();
+           
+            dtm.addRow(row);
+            }
+        }
+    }
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton alaertBtn;
+    private javax.swing.JTable alertDetailsTable;
+    private javax.swing.JTable gasesTable;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTextField notificationTxt;
+    // End of variables declaration//GEN-END:variables
+}
